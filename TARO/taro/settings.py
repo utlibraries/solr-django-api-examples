@@ -19,7 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '^o+bd%(-*f)t#0vk5o&o+(l26qu21)*+z%utp!2b&$gjs1gf11'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-if os.environ.get('ENV') == 'LOCAL':
+if os.environ.get('ENV', 'LOCAL') == 'LOCAL':
     DEBUG = True
 else:
     DEBUG = False
@@ -49,22 +49,7 @@ ADMINS = [
 
 ROOT_URLCONF = 'taro.taro_manager.urls'
 
-WSGI_APPLICATION = 'taro.wsgi.application'
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+WSGI_APPLICATION = 'wsgi.application'
 
 LANGUAGE_CODE = 'en'
 
@@ -78,8 +63,8 @@ USE_TZ = True
 
 EAD_XSD = 'taro/taro_manager/ead.xsd'
 
-STATIC_ROOT = os.path.join(BASE_DIR, os.environ.get('STATIC_ROOT', 'admin/static'))
-STATIC_URL = os.environ.get('STATIC_URL', '/admin/static/')
+STATIC_ROOT = os.path.join(BASE_DIR, os.environ.get('STATIC_ROOT', 'static'))
+STATIC_URL = os.environ.get('STATIC_URL', '/api/static/')
 STATICFILES_STORAGE = os.environ.get('STATICFILES_STORAGE', 'whitenoise.storage.CompressedStaticFilesStorage')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'taro/static'),
@@ -118,7 +103,6 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django_otp.middleware.OTPMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -159,7 +143,7 @@ LANGUAGES = (
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': os.environ.get('SOLR_BACKEND'),
+        'ENGINE': "haystack.backends.solr_backend.SolrEngine",
         'URL': os.environ.get('SOLR_URL', '') + os.environ.get('SOLR_COLLECTION', ''),
     },
 }
@@ -169,6 +153,17 @@ try:
     # Sending email to console for testing during local development
     if os.environ.get('LOCAL_EMAIL'):
         EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+    DATABASES = {
+        'default': {
+            'CONN_MAX_AGE': 0,
+            'ENGINE': 'django.db.backends.sqlite3',
+            'HOST': 'localhost',
+            'NAME': 'project.db',
+            'PASSWORD': '',
+            'PORT': '',
+            'USER': ''
+        }
+    }
 except ImportError:
     # if local settings are not present, then get assume deployed in Rancher
     DATABASES = {
@@ -206,8 +201,6 @@ X_FRAME_OPTIONS = 'SAMEORIGIN'
 DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 
 HAYSTACK_ITERATOR_LOAD_PER_QUERY = int(os.environ.get('HAYSTACK_ITERATOR_LOAD_PER_QUERY', 100))
-
-AUTH_USER_MODEL = "taro_manager.User"
 
 LOGIN_LINK = os.environ.get('LOGIN_DOMAIN')
 LOGIN_URL = os.environ.get('LOGIN_DOMAIN')

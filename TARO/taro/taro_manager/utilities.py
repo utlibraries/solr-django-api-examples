@@ -1,62 +1,10 @@
 """
 Taro Custom Utilities - functions that can be useful throughout application go here.
 """
-import logging
-import os
 import random
 import string
 import xml.etree.ElementTree as ET
-
-from rest_framework.throttling import UserRateThrottle
-from django.contrib.auth.models import AnonymousUser
-from taro import settings
 from taro.taro_manager.logger import logger
-
-
-class ExceptionalUserRateThrottle(UserRateThrottle):
-    def allow_request(self, request, view):
-        """
-        Overriding DRF's default UserRateThrottle so that we
-        can set per-user throttling (helpful in the case of apps
-        like the React front-end display).
-        """
-        if self.rate is None:
-            return True
-
-        self.key = self.get_cache_key(request, view)
-        if self.key is None:
-            return True
-
-        self.history = self.cache.get(self.key, [])
-        self.now = self.timer()
-
-        override_rate = settings.REST_FRAMEWORK['OVERRIDE_THROTTLE_RATES'].get(
-            request.user.username,
-            None,
-        )
-        if override_rate is not None:  # Set throttling for react-site
-            self.num_requests, self.duration = self.parse_rate(override_rate)
-        elif isinstance(request.user, AnonymousUser):  # Set throttling for anon requests
-            override_rate= settings.REST_FRAMEWORK['OVERRIDE_THROTTLE_RATES'].get(
-                'anon',
-                '100/hour',
-            )
-            self.num_requests, self.duration = self.parse_rate(override_rate)
-        else:  # Set throttling for authorized users
-            override_rate = settings.REST_FRAMEWORK['OVERRIDE_THROTTLE_RATES'].get(
-                'user',
-                '10000/hour',
-            )
-            self.num_requests, self.duration = self.parse_rate(override_rate)
-
-        # Drop any requests from the history which have now passed the
-        # throttle duration
-        while self.history and self.history[-1] <= self.now - self.duration:
-            self.history.pop()
-        if len(self.history) >= self.num_requests:
-            logger.debug(f"Requests from {request.user} throttled.")
-            return self.throttle_failure()
-        return self.throttle_success()
 
 
 def resolve_attributes_lookup(self, current_objects, attributes):
@@ -133,14 +81,3 @@ def find_dict_key(obj, key):
             if item is not None:
                 return item
     return None
-
-
-def is_deployed_react_app(request):
-    """
-    Utility function to check if request is coming from a deployed React environment.
-    """
-    staging = "Token " + os.environ.get('REACT_STAGING') if os.environ.get('REACT_STAGING') else None
-    production = "Token " + os.environ.get('REACT_PROD') if os.environ.get('REACT_PROD') else None
-    if request.headers.get('Authorization') == staging or request.headers.get('Authorization') == production:
-        return True
-    return False

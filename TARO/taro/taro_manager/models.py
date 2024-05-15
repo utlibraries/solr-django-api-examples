@@ -11,7 +11,6 @@ from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils import timezone
 
-
 from taro.taro_manager.finding_aid_parser import ParsedFindingAid
 from taro.taro_manager.exception_converter import ConvertExceptions
 from taro.taro_manager.logger import logger
@@ -266,7 +265,6 @@ class FindingAid(models.Model):
         """
         verbose_name_plural = "Finding Aids"
 
-
 class BrowseTerm(models.Model):
     value = models.CharField(max_length=255)
 
@@ -280,15 +278,3 @@ class AllowList(models.Model):
 
     def __str__(self):
         return str(self.label)
-
-
-class User(AbstractUser):
-    """
-    See https://docs.djangoproject.com/en/3.0/topics/auth/customizing/#substituting-a-custom-user-model   # pylint: disable=line-too-long
-    """
-    repositories = models.ManyToManyField(Repository, blank=True)
-    email = models.EmailField(unique=True)
-    dual_auth = models.BooleanField(
-        default=False)  # do they have a secure (not temporary) password and dual authentication?
-    is_staff = models.BooleanField(default=True)  # we don't have any users that are not also staff
-    # Note: can use built-in is_staff field to determine access to admin site.

@@ -5,9 +5,7 @@ Taro Search API Views. For more info: https://docs.djangoproject.com/en/3.1/topi
 import json
 import requests
 
-from django.http import HttpResponse, JsonResponse
-from django.utils.decorators import method_decorator
-from django.db.utils import OperationalError
+from django.http import HttpResponse
 from django.views.decorators.cache import cache_page
 from drf_haystack.viewsets import HaystackViewSet
 from drf_haystack.mixins import FacetMixin
@@ -19,15 +17,12 @@ from taro.taro_manager.models import FindingAid, Repository, Creator, \
 from taro.taro_manager.serializers import FindingAidSearchSerializer,  \
     CreatorSearchSerializer, AllowListSearchSerializer, \
     RepositorySearchSerializer, FindingAidFacetSerializer, FindingAidDisplaySerializer
-# from taro.taro_manager.utilities import ExceptionalUserRateThrottle, is_deployed_react_app
 from taro.taro_manager.solr_query import SolrQuery
-from taro.taro_manager.logger import logger
 
 
 class FindingAidDisplayViewSet(FacetMixin, HaystackViewSet):
     index_models = [FindingAidDisplayField]
     serializer_class = FindingAidDisplaySerializer
-    # throttle_classes = [ExceptionalUserRateThrottle]
 
     def list(self, request, *args, **kwargs):
         params = self.request.query_params
@@ -54,18 +49,8 @@ class FindingAidSearchViewSet(FacetMixin, HaystackViewSet):
     """
     index_models = [FindingAid]
     serializer_class = FindingAidSearchSerializer
-    # throttle_classes = [ExceptionalUserRateThrottle]
     facet_serializer_class = FindingAidFacetSerializer
     facet_query_params_text = 'params'  # default is "selected_facets"
-    # See https://django-haystack.readthedocs.io/en/latest/faceting.html#configuring-facet-behaviour
-    # and https://drf-haystack.readthedocs.io/en/latest/07_faceting.html#
-    # for additional faceting configuration options.
-
-    # def dispatch(self, *args, **kwargs):
-    #     try:
-    #         return super(FindingAidSearchViewSet, self).dispatch(*args, **kwargs)
-    #     except OperationalError as e:
-    #         return JsonResponse({'error': 'An invalid authorization token was provided.'}, status=400)
 
     # @method_decorator(cache_page(60 * 60 * 6))  # caching search results for 6 hours
     def list(self, request, *args, **kwargs):
@@ -75,9 +60,6 @@ class FindingAidSearchViewSet(FacetMixin, HaystackViewSet):
         """
         params = self.request.query_params
         solr_query = SolrQuery()
-        # from_front_end = is_deployed_react_app(request)
-        # if from_front_end == False:
-        #     logger.debug(f"Search API Request from {request.user}")
         custom_solr_query = solr_query.build_query(params=params, frontend_request=False)
         solr_results = requests.get(url=custom_solr_query)
         content = solr_results.content
@@ -85,13 +67,11 @@ class FindingAidSearchViewSet(FacetMixin, HaystackViewSet):
         if json.loads(decoded).get('error'):
             return HttpResponse(json.dumps(json.loads(decoded).get('error')), status=400)
         cleaned = json.loads(decoded).get('response').get('docs')
-        # if from_front_end == False:
         
         for fa in cleaned:
             fa.update({"display_site": f"txarchives.org/{fa['repository']}/finding_aids/{fa['filename']}"})
             fa.update({"xml": f"txarchives.org/admin/{fa['repository']}/{fa['filename']}"})
             
-
         return Response(cleaned, status=200)
 
 
@@ -101,13 +81,6 @@ class RepositorySearchViewSet(HaystackViewSet):
     """
     index_models = [Repository]
     serializer_class = RepositorySearchSerializer
-    # throttle_classes = [ExceptionalUserRateThrottle]
-
-    # def dispatch(self, *args, **kwargs):
-    #     try:
-    #         return super(RepositorySearchViewSet, self).dispatch(*args, **kwargs)
-    #     except OperationalError as e:
-    #         return JsonResponse({'error': 'An invalid authorization token was provided.'}, status=400)
 
     # @method_decorator(cache_page(60 * 60 * 24))  # caching repository search results for 24 hours
     def list(self, request, *args, **kwargs):
@@ -128,7 +101,6 @@ class RepositorySearchViewSet(HaystackViewSet):
 
 class CreatorSearchViewSet(HaystackViewSet):
     index_models = [Creator]
-    # throttle_classes = [ExceptionalUserRateThrottle]
     serializer_class = CreatorSearchSerializer
 
     # @method_decorator(cache_page(60 * 60 * 24))  # caching creator search results for 6 hours
@@ -154,7 +126,6 @@ class AllowListSearchViewSet(HaystackViewSet):
     TARO member (specifically TARO Admin) provided "allow lists".
     """
     index_models = [AllowList]
-    # throttle_classes = [ExceptionalUserRateThrottle]
     serializer_class = AllowListSearchSerializer
 
     # @method_decorator(cache_page(60 * 60 * 24))  # caching allowlist search results for 6 hours

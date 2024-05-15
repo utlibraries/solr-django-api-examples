@@ -19,5 +19,4 @@ app_name = 'taro_manager'   # pylint: disable=invalid-name
 
 urlpatterns = [
     path('api/', urls.include(router.urls)),
-    path('api-auth/', urls.include('rest_framework.urls')),
 ]
