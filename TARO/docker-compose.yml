@@ -1,0 +1,19 @@
+version: '3.6'
+services:
+  taro2-api:
+    container_name: taro-api
+    image: taro2-api
+    ports:
+      - "9000:9000"
+    expose:
+      - "9000"
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    # Use this command to replicate wsgi deployment
+    # command: ["bash", "-c", "exec gunicorn wsgi:application -b 0.0.0.0:9000 --workers=1"]
+    command: "python3 manage.py runserver 0.0.0.0:9000"
+    tty: true
+    stdin_open: true
+    volumes:
+      - .:/app

@@ -57,7 +57,7 @@ cover/
 
 # Django stuff:
 *.log
-local_settings.py
+*local_settings.py*
 db.sqlite3
 db.sqlite3-journal
 
@@ -158,3 +158,36 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+.vscode
+*local_settings.py
+taro/local_settings.py
+*__pycache__*
+notes/*
+*project.db
+*project.sqbpro
+.idea/*
+*/migrations/*
+taro/taro_manager/migrations/*
+taro/static/*xml
+taro/static/media
+*.tox/*git a
+*.tox
+*sqlite3*
+taro/taro_manager/management/commands/reports/*
+taro/.DS_Store
+taro/taro_manager/.DS_Store
+taro/taro_manager/management/commands/__pycache__/
+taro/taro_manager/taro_migration/__pycache__/
+taro/static/local_temp_files/*
+!taro/taro_manager/management/commands/reports/blank_file
+!taro/static/local_temp_files/blank.txt
+*.pyc
+.coverage
+sqlite3.db
+*.DS_Store
+.DS_Store
+admin/*
+project.db-journal
+
+.env*
