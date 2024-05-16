@@ -106,3 +106,23 @@ class AuthorityFileFacetsView(ListAPIView):
                 return Response({"Error fetching authority file facets: ": str(e)}, status=500)
     
         return Response(facet_data)
+    
+
+# Query formatting example
+# The following React code shows how we encode the raw search query into the solr search syntax
+# on the frontend site before we send it to this backend view.
+'''
+const encodeQuery = (q, mediaTypes, selectedGenres) => {
+    const needsQuotes = /[:()]/.test(q); // Check for special characters
+    const encodedQ = needsQuotes ? `"${q}"` : q;
+
+    const mediaTypeQuery = mediaTypes.length > 0
+        ? mediaTypes.map((mediaType) => `media_type:${mediaType}`).join(' OR ')
+        : '';
+
+    const genresQuery = selectedGenres.length > 0
+        ? ` AND (${createGenreQuery(selectedGenres)})`
+        : '';
+
+    return `q=${encodedQ}${mediaTypeQuery ? ` AND (${mediaTypeQuery})` : ''}${genresQuery}`;
+'''
