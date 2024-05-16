@@ -183,7 +183,7 @@ class Folders(models.Model):
 def get_current_date():
     return timezone.now().date()
     
-# Items can have one or more files associated with them, which will all be
+# Items (or Sets) can have one or more files associated with them, which will all be
 # displayed on the same viewer
 class Items(models.Model):
     class Visibility(models.TextChoices):

@@ -156,44 +156,4 @@ class CountriesViewSet(viewsets.ModelViewSet):
         serializer = CountriesAutosuggestSerializer(countries, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
-    def make_csv(response, page_language):
-        csv_rows = []
-        headers = [
-            "id",
-            f"name.{page_language}",
-            "islandora_pid",
-            "country_code",
-            "viaf",
-            "flag_code",
-        ]
-        csv_rows.append(','.join(headers))
-
-        response_content = response.content.decode('utf-8')
-
-        # Load JSON from the content
-        data = json.loads(response_content)
-
-        for item in data:
-            values = [None] * len(headers)
-
-            for index, key in enumerate(headers):
-                field_name, lang = key.split('.') if '.' in key else (key, 'en')
-                field_value = ''
-
-                if field_name in item and item[field_name] is not None:
-                    if isinstance(item[field_name], int):
-                        field_value = str(item[field_name])
-                    elif isinstance(item[field_name], str) or isinstance(item[field_name], list):
-                        field_value = item[field_name]
-                    else:
-                        field_value = item[field_name].get(lang, '') or item[field_name].get('en', '') or ''
-
-                if isinstance(field_value, str) and (',' in field_value or '\n' in field_value):
-                    field_value = field_value.replace('"', '""')
-                    field_value = f'"{field_value}"'
-
-                values[index] = field_value if isinstance(field_value, str) else str(field_value)
-
-            csv_rows.append(','.join(values))
-
-        return '\n'.join(csv_rows)
+    

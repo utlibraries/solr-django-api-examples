@@ -96,27 +96,6 @@ class FoldersSerializer(serializers.ModelSerializer):
         # Prepare your Folder data but do not save it yet
         folder = Folders(title=title, description=description, **validated_data)
 
-        # Add the folder to Fedora before saving it in your database
-        fcrepo6_api = RestAdapter()
-
-        # Get the endpoint to make a new container
-        ENVIRONMENT_PREFIX = os.environ.get("ENVIRONMENT_PREFIX")
-        fedora_endpoint = f"{folder.parent_collection.fedora_uuid}/"
-
-        # Make a new container in Fedora that will represent this new folder
-        try:
-            pattern = r'^(\w+)/(\w+)/([a-fA-F0-9\-]{36})/$'
-            match = re.match(pattern, fedora_endpoint)
-            if match:
-                response: requests.models.Response = fcrepo6_api.make_or_update_container(
-                    endpoint=fedora_endpoint, container_type=Container.BASIC
-                )
-            else:
-                raise Exception(f"Invalid fedora_endpoint format: {fedora_endpoint}")
-        except Exception as e:
-            logger.error(f"Error making Folder's container in Fedora: {e}")
-            raise
-
         # Parse the response of the container creation to find the UUID Fedora created for it
         folder.fedora_uuid = response.content.decode().split("fcrepo/rest/")[-1]
 
@@ -192,43 +171,6 @@ class FoldersSerializer(serializers.ModelSerializer):
             solr.add(solr_data)
 
         return super().update(instance, validated_data)
-    
-    # def destroy(self, instance):
-    #     folder_id = instance.id
-    #     with transaction.atomic(): 
-    #         folder = Folders.objects.get(id=folder_id)
-
-    #         # Delete all text objects referenced in folder
-    #         ## Foreign-key text object fields are: name, description
-    #         folder_title_id = folder.title.id
-    #         folder_description_id = folder.description.id
-            
-    #         # Delete items and files
-    #         items = Items.objects.filter(parent_folder=folder_id)
-    #         if items:
-    #             for item in items:
-    #                 items_serializer = ItemsSerializer(item)
-    #                 items_serializer.destroy(item)
-
-    #         # Delete folder
-    #         folder.delete()
-
-    #         # Delete folder title text object
-    #         folder_title_text = Text.objects.get(id=folder_title_id)
-    #         folder_title_text.delete()
-
-    #         # Delete folder description text object
-    #         folder_description_text = Text.objects.get(id=folder_description_id)
-    #         folder_description_text.delete()
-            
-    #         # Delete Fedora terms
-    #         fedora_endpoint = instance.fedora_uuid
-    #         fedora_id = instance.fedora_uuid
-
-    #         fedora_api = RestAdapter()
-    #         delete_response = fedora_api.delete(fedora_endpoint)
-
-    #         return delete_response
   
     def get_countries(self,obj):
         countries = []

@@ -5,6 +5,17 @@ from django.core.cache import cache
 
 from ailla.solr import solr
 
+''' Performs a simple search using the q parameter in the solr syntax.
+
+On AILLA, queries might look like search/?q=Nahuatl or search/?q=Bolivia. 
+
+Searches can also be complex. For example search/?q=Nahuatl&genre_en:'wordlist' will find
+all documents related to Nahuatl that also have the solr field genre_en set to the value 
+wordlist. You can search on any solr field with this general pattern:
+    [SOLR FIELD NAME]:'value'
+
+Solr also allows other types of complex queries. See the solr documentation for examples.
+'''
 class SearchView(ListAPIView):
     def get(self, request):
         query = request.query_params.get('q', '')
