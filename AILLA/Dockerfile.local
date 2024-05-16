@@ -1,0 +1,17 @@
+FROM python:3.11
+LABEL maintainer "POD SQUAD <LIT-Pod-Squad@austin.utexas.edu>"
+
+ENV PYTHONUNBUFFERED=1
+
+RUN mkdir /app
+COPY src/ /app/
+
+WORKDIR /app
+RUN pip install -r requirements.txt
+RUN pip install --no-cache gunicorn
+
+RUN groupadd -g 1001 ailla
+RUN useradd -g ailla -u 1001 ailla
+RUN chown -R ailla:ailla /app
+
+USER ailla

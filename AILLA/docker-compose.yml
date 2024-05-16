@@ -1,0 +1,15 @@
+version: "3.8"
+
+services:
+  ailla:
+    container_name: ailla
+    build: 
+      context: .
+      dockerfile: Dockerfile.local
+    command: python3 manage.py runserver 0.0.0.0:8000
+    tty: true
+    stdin_open: true
+    volumes:
+      - ./src:/app
+    ports:
+      - "8000:8000"
