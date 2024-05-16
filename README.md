@@ -2,6 +2,7 @@
 Examples of using Python/Django to create an API layer for Solr queries.
 
 ## AILLA
+See readme in AILLA folder.
 
 ## TARO
 This is a stripped down version of the Search API that the Texas Archival Resources Online application uses to power the search & display functionality for the front end site ([txarchives.org](txarchives.org)) and provides metadata to the TARO OAI-PMH service.
