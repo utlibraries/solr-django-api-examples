@@ -26,7 +26,7 @@ SOLR_COLLECTION = "PUT SOLR COLLECTION HERE"
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'sem4-s$#7mq-($qg5tcmo#-e=j&fe*@@-sby0fcnt147hx#my1'
+SECRET_KEY = '1234'
 
 DEBUG = True
 
