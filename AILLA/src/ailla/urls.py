@@ -5,32 +5,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 from rest_framework import routers
 
-from .organizations import OrganizationsViewSet
-from .countries import CountriesViewSet
-from .languages import LanguagesViewSet
-from .controlled_vocabularies import  MediaContentTypesViewSet,GenreViewSet, ParticipantRolesViewSet, OriginalMediaTypeViewSet
-from .collections import CollectionsViewSet
-from .folders import FoldersViewSet
-from .contributor_roles import ContributorRoleViewSet
 from .search import SearchView
 from .search import AuthorityFileFacetsView
 from . import views
 
 router = routers.DefaultRouter(trailing_slash=False)
-
-router.register(r'collections', CollectionsViewSet)
-router.register(r'folders', FoldersViewSet)
-
-router.register(r'organizations', OrganizationsViewSet)
-router.register(r'languages', LanguagesViewSet)
-router.register(r'countries', CountriesViewSet)
-
-router.register(r'contributorroles', ContributorRoleViewSet)
-router.register(r'genres', GenreViewSet)
-router.register(r'participantroles', ParticipantRolesViewSet)
-router.register(r'mediacontenttype', MediaContentTypesViewSet)
-router.register(r'originalmediatype', OriginalMediaTypeViewSet)
-
 
 """project URL Configuration
 
