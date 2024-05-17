@@ -14,9 +14,13 @@ TARO uses both [Django Haystack](https://django-haystack.readthedocs.io/en/maste
 Most of these endpoints are used for search; however, TARO also has a FindingAidDisplayViewSet endpoint, which is used to provide a blob of json that the front end site uses to generate ReactJS components. 
 
 finding_aid_display/search: returns blob of json used for display
+
 finding_aid/search: the custom Solr query for searching finding aids
+
 repository/search: DRF-Haystack query for repositories
+
 creators/search: DRF-Haystack query for creators
+
 allowlists/search: DRF-Haystack query for allowlists (pre-canned browse/search queries)
 
 ## Solr Management Command
